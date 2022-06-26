@@ -3,6 +3,9 @@
 @mainBorder: 3px dashed #111;
 @mainDesktopPadding: 50px 100px;
 @mainPadPadding: 10px 30px;
+@mainColor: #03a8f4;
+@mainDesktopMaxWidth: 2560px;
+@mainBackgroundColor: #fff;
 @headerDesktopToggleWidth: 30px;
 @headerPadToggleWidth: calc(@headerDesktopToggleWidth * 5 / 6);
 @backgroundColor: #333;
@@ -11,6 +14,39 @@
 @footerDeskTopIconWidth: 40px;
 @footerPadIconWidth: 30px;
 @footerPadMargin: 20px;
+@videoOverlayIslandColor: #054f7199;
+@videoOverlaySpringColor: #054f716d;
+@videoOverlaySummerColor: #054f714e;
+@videoOverlayAutumnColor: #054f713a;
+@videoOverlayWinterColor: #1098d785;
+@textDescriptionh1DesktopSize: 3em;
+@textDescriptionh2DesktopSize: 2.5em;
+@textDescriptionpDesktopSize: 1rem;
+@textDescriptionh1PadSize: 2.5em;
+@textDescriptionh2PadSize: 2em;
+@textDescriptionpPadSize: 1rem;
+@menuWidth: 10em;
+@mainStructureLeft: 2em;
+@mainStructureBottom: 1em;
+
+@buttonHover: {
+  background-color: @mainColor;
+  letter-spacing: 4px;
+}
+
+@button: {
+  display: inline-block;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2px solid @mainBackgroundColor;
+  padding: 10px 30px;
+  line-height: 1em;
+  letter-spacing: 2px;
+  border-radius: 30px;
+  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.1),
+    -1px -1px 8px rgba(255, 255, 255, 0.1);
+  transition: 0.5s;
+}
 
 * {
   margin: 0;
@@ -26,7 +62,7 @@ html {
   all: none;
   width: 100vw;
   height: 100vh;
-
+  overflow: hidden;
 }
 
 @media screen {
@@ -36,14 +72,37 @@ html {
     height: 100vh;
     flex-direction: column;
     justify-content: space-between;
-    border: @mainBorder;
-    background-color: @backgroundColor;
+    max-width: @mainDesktopMaxWidth;
+    // border: @mainBorder;
+    // background-color: @backgroundColor;
     font-size: @mainDesktopFontSize;
+    overflow: hidden;
+    transition: 1s;
+    position: relative;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    transform: perspective(5000px);
+
+    &.active {
+      width: calc(100% - @menuWidth);
+      height: calc(100% - 2 * @mainStructureBottom);
+      transform: perspective(5000px) rotateY(30deg);
+      top: @mainStructureBottom;
+      left: @mainStructureLeft;
+      bottom: @mainStructureBottom;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      // margin: @mainStructureBottom @mainStructureLeft;
+      border-radius: 20px;
+
+    }
 
     header,
     .content,
     footer {
-      border: @mainBorder;
+      // border: @mainBorder;
       width: 100%;
       padding: @mainDesktopPadding;
       transition: 0.5s;
@@ -54,13 +113,36 @@ html {
       justify-content: space-between;
       align-items: center;
 
+      .logo {
+        transition: 0.5s;
+
+        &:hover {
+          transform: scale(1.3);
+        }
+      }
+
       .menu-toggle {
-        background: url('/src/icons/menu-2-line.svg');
+        background: url('/src/icons/menu-2-line.svg') center;
         width: @headerDesktopToggleWidth;
         height: @headerDesktopToggleWidth;
         background-repeat: no-repeat;
         background-size: @headerDesktopToggleWidth;
-        filter: invert(1)
+        filter: invert(1);
+        cursor: pointer;
+        // box-sizing: content-box;
+
+        &:hover {
+          animation: toggleHover ease-in-out 1.5s infinite;
+          border: 3px solid #000;
+          border-radius: 50%;
+        }
+      }
+
+      .menu-toggle.active {
+        background: url('/src/icons/close-fill.svg') center;
+        background-repeat: no-repeat;
+        background-size: @headerDesktopToggleWidth;
+
       }
     }
 
@@ -74,6 +156,7 @@ html {
         width: @footerDeskTopIconWidth;
         height: @footerDeskTopIconWidth;
         filter: invert(1);
+        transition: 0.3s;
 
         &:not(:last-child) {
           margin-right: @footerDesktopMargin;
@@ -83,7 +166,128 @@ html {
           width: 100%;
           height: 100%;
         }
+
+        &:hover {
+          transform: translateY(-10px);
+        }
       }
+    }
+
+    .content {
+
+      video,
+      .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        transition: 1s;
+      }
+
+      video {
+        object-fit: cover;
+        margin: 0;
+        padding: 0;
+        clip-path: ellipse(0% 0% at 0% 50%);
+      }
+      .video-overlay {
+        mix-blend-mode: overlay;
+      }
+      .video-overlay-island {
+        background-color: @videoOverlayIslandColor;
+      }
+      .video-overlay-spring {
+        background-color: @videoOverlaySpringColor;
+      }
+      .video-overlay-summer {
+        background-color: @videoOverlaySummerColor;
+      }
+      .video-overlay-autumn {
+        background-color: @videoOverlayAutumnColor;
+      }
+      .video-overlay-winter {
+        background-color: @videoOverlayWinterColor;
+      }
+      video.active {
+        clip-path: ellipse(150% 70% at 0% 50%);
+      }
+
+      h1,
+      h2 {
+        text-transform: uppercase;
+      }
+
+      h1 {
+        font-size: @textDescriptionh1DesktopSize;
+        line-height: 1em;
+      }
+
+      h2 {
+        font-size: @textDescriptionh2DesktopSize;
+        line-height: 1em;
+      }
+
+      p {
+        font-size: @textDescriptionpDesktopSize;
+        line-height: 1.5em;
+        max-width: 700px;
+        min-width: 500px;
+        margin: 3em 0;
+      }
+
+      a {
+        @button();
+        &:hover {
+          @buttonHover()
+        }
+
+      }
+    }
+  }
+
+  .aside-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    font-size: @mainDesktopFontSize;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    // left: 0;
+    width: @menuWidth;
+    height: 100%;
+    min-width: calc(@menuWidth * 2 / 3);
+    padding-right: @mainStructureLeft;
+    a {
+      &:not(:last-child) {
+        margin-bottom: 20px;
+      }
+      @button();
+      color: @mainColor;
+      border-color: @mainColor;
+      width: 100%;
+      text-align: center;
+    
+      &:hover {
+        @buttonHover();
+        color: #fff;
+      }
+    }
+  }
+
+  @keyframes toggleHover {
+
+    to,
+    from {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.3)
     }
   }
 
@@ -111,10 +315,29 @@ html {
           height: @footerPadIconWidth;
 
           &:not(:last-child) {
-            margin-right: @footerPadIconWidth;
+            margin-right: @footerPadMargin;
           }
         }
       }
+
+      .content {
+        h1 {
+          font-size: @textDescriptionh1PadSize;
+        }
+
+        h2 {
+          font-size: @textDescriptionh2PadSize;
+        }
+
+        p {
+          font-size: @textDescriptionpPadSize;
+          max-width: 500px;
+          min-width: 300px;
+        }
+      }
+    }
+    .aside-menu {
+      font-size: @mainPadFontSize;
     }
   }
 }
